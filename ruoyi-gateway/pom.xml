@@ -65,6 +65,18 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-client</artifactId>
+            <version>2.1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ruoyi.cloud</groupId>
+            <artifactId>ruoyi-common-redis</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

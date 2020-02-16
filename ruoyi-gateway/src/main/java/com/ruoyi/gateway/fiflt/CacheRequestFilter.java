@@ -1,8 +1,6 @@
 package com.ruoyi.gateway.fiflt;
 
-import java.util.Collections;
-import java.util.List;
-
+import lombok.Data;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
@@ -14,10 +12,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
-
-import lombok.Data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class CacheRequestFilter extends AbstractGatewayFilterFactory<CacheRequestFilter.Config>

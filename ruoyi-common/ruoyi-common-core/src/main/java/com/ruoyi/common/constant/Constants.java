@@ -67,6 +67,7 @@ public class Constants
     public static final String CURRENT_USERNAME = "current_username";
 
     public static final String TOKEN            = "token";
+    public static final String URLTOKEN            = "Urltoken";
 
     public static final String DEFAULT_CODE_KEY = "random_code_";
 
@@ -75,4 +76,5 @@ public class Constants
     public final static String ACCESS_USERID    = "access_userid_";
 
     public static final String RESOURCE_PREFIX  = "/profile";
+    public static final String URL_CACHE  = "_url_Cache";
 }

@@ -15,15 +15,14 @@
  */
 package com.ruoyi.gateway.config;
 
+import com.ruoyi.gateway.handler.HystrixFallbackHandler;
+import com.ruoyi.gateway.handler.ImgCodeHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
-
-import com.ruoyi.gateway.handler.HystrixFallbackHandler;
-import com.ruoyi.gateway.handler.ImgCodeHandler;
 
 import lombok.AllArgsConstructor;
 
@@ -38,7 +37,7 @@ public class RouterFunctionConfiguration
 {
     private final HystrixFallbackHandler hystrixFallbackHandler;
 
-    private final ImgCodeHandler         imgCodeHandler;
+    private final ImgCodeHandler imgCodeHandler;
 
     @Bean
     public RouterFunction<?> routerFunction()
