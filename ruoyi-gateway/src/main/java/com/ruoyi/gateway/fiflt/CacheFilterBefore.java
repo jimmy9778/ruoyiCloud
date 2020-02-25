@@ -1,9 +1,6 @@
 package com.ruoyi.gateway.fiflt;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.core.domain.R;
 import com.ruoyi.gateway.config.UrlProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +27,10 @@ import java.util.Arrays;
 @Slf4j
 @Component
 public class CacheFilterBefore implements GlobalFilter, Ordered {
+//    @Autowired
+//    private CacheUtil ops;
     @Resource(name = "stringRedisTemplate")
     private ValueOperations<String, String> ops;
-
     @Autowired
     private UrlProperties urlProperties;
     @Override
@@ -46,7 +44,7 @@ public class CacheFilterBefore implements GlobalFilter, Ordered {
         if(Arrays.asList(cacheUrls).contains(urlPath)){
             String json = ops.get(urlPath);
             if(json != null ){
-                System.out.print("before");
+                log.info("the request has cache, response");
                 return setOKResponse(exchange,json);
             }
         }
@@ -59,7 +57,7 @@ public class CacheFilterBefore implements GlobalFilter, Ordered {
         originalResponse.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
         byte[] response = null;
         try {
-            response = JSON.toJSONString(msg).getBytes(Constants.UTF8);
+            response = msg.getBytes(Constants.UTF8);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

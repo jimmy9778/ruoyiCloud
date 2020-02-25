@@ -28,51 +28,46 @@ import java.io.UnsupportedEncodingException;
 @Component
 @EnableConfigurationProperties(UrlProperties.class)
 public class AuthFilter implements GlobalFilter, Ordered {
-    @Autowired
-    UrlProperties urlProperties;
+	@Autowired
+	UrlProperties urlProperties;
 
 
+	@Override
+	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+		String urlTokenList = urlProperties.getUrl();
 
-    @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String urlTokenList = urlProperties.getUrl();
+		String url = exchange.getRequest().getURI().getPath();
+		log.info("url:{}", url);
+		JSONObject jsonObject = JSONObject.parseObject(urlTokenList);
+		//演示用，后边换到从heads或者cookie中获取
+		String token = exchange.getRequest().getHeaders().getFirst(Constants.URLTOKEN);
+		String urlVer = url.substring(1);
+		urlVer = urlVer.substring(0, urlVer.indexOf("/"));
+		// 跳过不需要验证的路径
+		if (jsonObject.containsKey(urlVer)) {
+			return token != null && jsonObject.get(urlVer).equals(token) ? chain.filter(exchange) :
+					setUnauthorizedResponse(exchange, "token can't null or empty string");
+		} else {
+			return chain.filter(exchange);
+		}
+	}
 
-        String url = exchange.getRequest().getURI().getPath();
-        log.info("url:{}", url);
-        JSONObject jsonObject =  JSONObject.parseObject(urlTokenList);
-        //演示用，后边换到从heads或者cookie中获取
-        String token = exchange.getRequest().getHeaders().getFirst(Constants.URLTOKEN);
-        String urlVer = url.substring(1);
-        urlVer = urlVer.substring(0,urlVer.indexOf("/"));
-        // 跳过不需要验证的路径
-        if (jsonObject.containsKey(urlVer)) {
-            if (token != null && jsonObject.get(urlVer).equals(token)) {
-                return chain.filter(exchange);
-            } else {
-                return setUnauthorizedResponse(exchange, "token can't null or empty string");
-            }
+	private Mono<Void> setUnauthorizedResponse(ServerWebExchange exchange, String msg) {
+		ServerHttpResponse originalResponse = exchange.getResponse();
+		originalResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
+		originalResponse.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
+		byte[] response = null;
+		try {
+			response = JSON.toJSONString(R.error(401, msg)).getBytes(Constants.UTF8);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		DataBuffer buffer = originalResponse.bufferFactory().wrap(response);
+		return originalResponse.writeWith(Flux.just(buffer));
+	}
 
-        } else {
-            return setUnauthorizedResponse(exchange, "token can't null or empty string");
-        }
-    }
-
-    private Mono<Void> setUnauthorizedResponse(ServerWebExchange exchange, String msg) {
-        ServerHttpResponse originalResponse = exchange.getResponse();
-        originalResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
-        originalResponse.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
-        byte[] response = null;
-        try {
-            response = JSON.toJSONString(R.error(401, msg)).getBytes(Constants.UTF8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        DataBuffer buffer = originalResponse.bufferFactory().wrap(response);
-        return originalResponse.writeWith(Flux.just(buffer));
-    }
-
-    @Override
-    public int getOrder() {
-        return -200;
-    }
+	@Override
+	public int getOrder() {
+		return -200;
+	}
 }

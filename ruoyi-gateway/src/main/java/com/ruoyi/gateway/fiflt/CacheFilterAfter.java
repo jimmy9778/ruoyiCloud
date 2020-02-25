@@ -1,9 +1,6 @@
 package com.ruoyi.gateway.fiflt;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.core.domain.R;
 import com.ruoyi.gateway.config.UrlProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -15,7 +12,6 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -25,7 +21,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
@@ -37,7 +32,8 @@ import java.util.Arrays;
 public class CacheFilterAfter implements GlobalFilter, Ordered {
     @Resource(name = "stringRedisTemplate")
     private ValueOperations<String, String> ops;
-
+//    @Autowired
+//    private CacheUtil ops;
     @Autowired
     private UrlProperties urlProperties;
 
@@ -47,6 +43,7 @@ public class CacheFilterAfter implements GlobalFilter, Ordered {
         String urlPath = originalRequest.getURI().getPath();
         String cacheUrl = urlProperties.getCacheUrl();
         String[] cacheUrls = cacheUrl.split(",");
+        //只要请求地址在 缓存目录中，就要存放到缓存中
         if(Arrays.asList(cacheUrls).contains(urlPath)){
             ServerHttpResponse originalResponse = exchange.getResponse();
             DataBufferFactory bufferFactory = originalResponse.bufferFactory();
@@ -76,7 +73,7 @@ public class CacheFilterAfter implements GlobalFilter, Ordered {
                 }
             };
             // replace response with decorator
-            System.out.print("after");
+            log.info("the response text has cache");
             return chain.filter(exchange.mutate().response(decoratedResponse).build());
         }else{
             return chain.filter(exchange);

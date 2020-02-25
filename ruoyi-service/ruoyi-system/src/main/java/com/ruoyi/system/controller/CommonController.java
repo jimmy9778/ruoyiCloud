@@ -1,24 +1,27 @@
 package com.ruoyi.system.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ToolUtil;
 import com.ruoyi.common.utils.file.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 通用请求处理
  * 
  * @author ruoyi
  */
-@Controller
+@RestController
 public class CommonController
 {
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);
@@ -55,5 +58,14 @@ public class CommonController
         {
             log.error("下载文件失败", e);
         }
+    }
+    @RequestMapping("common/get")
+    public R get(HttpServletResponse response, HttpServletRequest request)
+    {
+        Map<String,Object> resultMap = new HashMap<String,Object>();
+        resultMap.put("msg","success");
+        resultMap.put("code","200");
+        resultMap.put("data","你好");
+        return R.ok(resultMap);
     }
 }
