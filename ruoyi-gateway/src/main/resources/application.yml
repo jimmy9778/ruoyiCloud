@@ -1,6 +1,8 @@
 server:
   port: 9527
-
+memcache:
+  ip: 127.0.0.1
+  port: 11211
 spring:
   application:
     name: ruoyi-gateway
@@ -10,9 +12,16 @@ spring:
       additional-paths: src/main/java
   profiles:
     active: dev
-  cache:
-    ehcache:
-      config: classpath:ehcache.xml
+#  memcache:
+#    servers: 127.0.0.1:11211
+#    failover: true
+#    initConn: 100
+#    minConn: 20
+#    maxConn: 1000
+#    maintSleep: 50
+#    nagel: false
+#    socketTO: 3000
+#    aliveCheck: true
   cloud:
     config:
       fail-fast: true

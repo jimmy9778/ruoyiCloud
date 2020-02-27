@@ -2,7 +2,9 @@ package com.ruoyi.gateway.fiflt;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.gateway.config.UrlProperties;
+import com.ruoyi.gateway.util.MemCacheRunner;
 import lombok.extern.slf4j.Slf4j;
+import net.spy.memcached.MemcachedClient;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -11,7 +13,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
@@ -20,7 +21,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
@@ -30,8 +30,11 @@ import java.util.Arrays;
 @Slf4j
 @Component
 public class CacheFilterAfter implements GlobalFilter, Ordered {
-    @Resource(name = "stringRedisTemplate")
-    private ValueOperations<String, String> ops;
+//    @Resource(name = "stringRedisTemplate")
+//    private ValueOperations<String, String> ops;
+
+    @Autowired
+    MemCacheRunner memCacheRunner;
 //    @Autowired
 //    private CacheUtil ops;
     @Autowired
@@ -39,6 +42,7 @@ public class CacheFilterAfter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        MemcachedClient ops = memCacheRunner.getClient();
         ServerHttpRequest originalRequest = exchange.getRequest();
         String urlPath = originalRequest.getURI().getPath();
         String cacheUrl = urlProperties.getCacheUrl();
@@ -61,7 +65,7 @@ public class CacheFilterAfter implements GlobalFilter, Ordered {
                             String json = new String(content, Charset.forName("UTF-8"));
                             JSONObject jsonObject = JSONObject.parseObject(json);
                             if(jsonObject.get("code").toString().equals("200")){
-                                ops.set(urlPath,json);
+                                ops.set(urlPath,30000,json);
                             }
                             //TODO，s就是response的值，想修改、查看就随意而为了
                             byte[] uppedContent = new String(content, Charset.forName("UTF-8")).getBytes();

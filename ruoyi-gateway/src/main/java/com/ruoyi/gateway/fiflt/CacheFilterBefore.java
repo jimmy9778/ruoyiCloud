@@ -2,13 +2,14 @@ package com.ruoyi.gateway.fiflt;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.gateway.config.UrlProperties;
+import com.ruoyi.gateway.util.MemCacheRunner;
 import lombok.extern.slf4j.Slf4j;
+import net.spy.memcached.MemcachedClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -17,7 +18,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
@@ -29,12 +29,16 @@ import java.util.Arrays;
 public class CacheFilterBefore implements GlobalFilter, Ordered {
 //    @Autowired
 //    private CacheUtil ops;
-    @Resource(name = "stringRedisTemplate")
-    private ValueOperations<String, String> ops;
+//    @Resource(name = "stringRedisTemplate")
+//    private ValueOperations<String, String> ops;
+
+    @Autowired
+    MemCacheRunner memCacheRunner;
     @Autowired
     private UrlProperties urlProperties;
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        MemcachedClient ops = memCacheRunner.getClient();
         String url = exchange.getRequest().getURI().getPath();
         log.info("url:{}", url);
         ServerHttpRequest originalRequest = exchange.getRequest();
@@ -42,7 +46,7 @@ public class CacheFilterBefore implements GlobalFilter, Ordered {
         String cacheUrl = urlProperties.getCacheUrl();
         String[] cacheUrls = cacheUrl.split(",");
         if(Arrays.asList(cacheUrls).contains(urlPath)){
-            String json = ops.get(urlPath);
+            String json = ops.get(urlPath)!=null?ops.get(urlPath).toString():null;
             if(json != null ){
                 log.info("the request has cache, response");
                 return setOKResponse(exchange,json);
