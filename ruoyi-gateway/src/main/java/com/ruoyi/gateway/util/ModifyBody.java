@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 
 public abstract class ModifyBody {
 
-	private Mono<Void> defaultMethod(ServerWebExchange exchange, GatewayFilterChain chain, int ruleNum){
+	public Mono<Void> defaultMethod(ServerWebExchange exchange, GatewayFilterChain chain, int ruleNum){
 		ServerRequest serverRequest = ServerRequest.create(exchange, HandlerStrategies.withDefaults().messageReaders());
 		MediaType mediaType = exchange.getRequest().getHeaders().getContentType();
 		//重点 修改body中的json数据，可以进行参数的验证，修改，格式话等
@@ -48,13 +48,11 @@ public abstract class ModifyBody {
 			return chain.filter(exchange.mutate().request(decorator).build());
 		}));
 	}
-	public String modifyBody(String paramStr,int ruleNum){
-		verifySignature();
-		return paramStr;
+	public String modifyBody(String paramStr,int ruleNum) throws Exception{
+		return verifySignature(paramStr);
 	}
 
 	public String verifySignature(String paramStr) throws Exception{
-		log.info("密文{}", paramStr);
 		String dParamStr;
 		try{
 //            dParamStr = AESUtil.decrypt(paramStr, AES_SECURTY);

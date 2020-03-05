@@ -24,10 +24,7 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 @Component
 public class EsRequestFilter extends ModifyBody implements GlobalFilter, Ordered {
-//    @Resource(name = "stringRedisTemplate")
-//    private ValueOperations<String, String> ops;
-//    @Autowired
-//    private UrlProperties urlProperties;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String url = exchange.getRequest().getURI().getPath();
@@ -90,7 +87,8 @@ public class EsRequestFilter extends ModifyBody implements GlobalFilter, Ordered
      * @return
      * @throws Exception
      */
-    private String verifySignature(String paramStr) throws Exception{
+    @Override
+    public String verifySignature(String paramStr) throws Exception{
         log.info("密文{}", paramStr);
         String dParamStr;
         try{
