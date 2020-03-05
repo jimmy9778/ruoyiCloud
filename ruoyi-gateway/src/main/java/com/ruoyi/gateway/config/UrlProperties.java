@@ -13,4 +13,5 @@ import org.springframework.context.annotation.PropertySource;
 public class UrlProperties {
     private String url;
     private String cacheUrl;
+    private String esUrl;
 }

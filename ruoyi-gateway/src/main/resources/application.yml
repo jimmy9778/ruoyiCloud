@@ -60,14 +60,49 @@ spring:
             - name: RequestRateLimiter
               args:
                 key-resolver: '#{@remoteAddrKeyResolver}'
-                redis-rate-limiter.replenishRate: 10
-                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.replenishRate: 1000
+                redis-rate-limiter.burstCapacity: 2000
               # 降级配置
             - name: Hystrix
               args:
                 name: fallbackcmd
                 fallbackUri: 'forward:/fallback'
-
+        #es 模块
+        - id: gateway_es
+          uri: http://192.168.100.5:9200/
+          predicates:
+            - Path=/es/**
+          filters:
+            # 限流配置
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@remoteAddrKeyResolver}'
+                redis-rate-limiter.replenishRate: 1000
+                redis-rate-limiter.burstCapacity: 2000
+              # 降级配置
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: 'forward:/fallback'
+        #gateway_basic 模块
+        - id: gateway_basic
+          uri: http://192.168.100.5:1521/
+          predicates:
+            - Path=/basic/**
+          filters:
+            # 限流配置
+            - StripPrefix=1
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@remoteAddrKeyResolver}'
+                redis-rate-limiter.replenishRate: 1000  #允许用户每秒处理多少个请求
+                redis-rate-limiter.burstCapacity: 2000  #令牌桶的容量，允许在一秒钟内完成的最大请求数
+              # 降级配置
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: 'forward:/fallback'
 eureka:
   client: #客户端注册进eureka服务列表内
     service-url:

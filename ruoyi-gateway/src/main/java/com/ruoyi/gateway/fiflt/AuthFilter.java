@@ -20,6 +20,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 网关鉴权
@@ -44,9 +46,12 @@ public class AuthFilter implements GlobalFilter, Ordered {
 		String urlVer = url.substring(1);
 		urlVer = urlVer.substring(0, urlVer.indexOf("/"));
 		// 跳过不需要验证的路径
+
 		if (jsonObject.containsKey(urlVer)) {
-			return token != null && jsonObject.get(urlVer).equals(token) ? chain.filter(exchange) :
-					setUnauthorizedResponse(exchange, "token can't null or empty string");
+			String apiKey = jsonObject.get(urlVer).toString();
+			List<String> stringList  = Arrays.asList(apiKey.split(","));
+			boolean match = stringList.stream().anyMatch((api) -> api.equals(token));
+			return match?chain.filter(exchange) : setUnauthorizedResponse(exchange, "token can't null or empty string");
 		} else {
 			return chain.filter(exchange);
 		}

@@ -67,7 +67,7 @@ public class Constants
     public static final String CURRENT_USERNAME = "current_username";
 
     public static final String TOKEN            = "token";
-    public static final String URLTOKEN            = "Urltoken";
+    public static final String URLTOKEN            = "api_key";
 
     public static final String DEFAULT_CODE_KEY = "random_code_";
 
