@@ -77,4 +77,6 @@ public class Constants
 
     public static final String RESOURCE_PREFIX  = "/profile";
     public static final String URL_CACHE  = "_url_Cache";
+    public static final String ES  = "es";
+    public static final String ES_RULE  = "es_rule";
 }

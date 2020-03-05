@@ -1,6 +1,9 @@
 server: 
   port: 7001
- 
+  tomcat:
+    max-connections: 1000 # Maximum number of connections that the server accepts and processes at any given time.
+    max-threads: 100 # Maximum number of worker threads.
+    min-spare-threads: 10 # Minimum number of worker threads.
 eureka: 
   instance:
     hostname: eureka7001.com #eureka服务端的实例名称

@@ -1,6 +1,7 @@
 package com.ruoyi.gateway.fiflt;
 
 import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.gateway.config.UrlProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -58,13 +59,13 @@ public class CacheFilterAfter implements GlobalFilter, Ordered {
                             dataBuffer.read(content);
                             //释放掉内存
                             DataBufferUtils.release(dataBuffer);
-                            String json = new String(content, Charset.forName("UTF-8"));
+                            String json = new String(content, Charset.forName(Constants.UTF8));
                             JSONObject jsonObject = JSONObject.parseObject(json);
                             if(jsonObject.get("code").toString().equals("200")){
                                 ops.set(urlPath,json);
                             }
                             //TODO，s就是response的值，想修改、查看就随意而为了
-                            byte[] uppedContent = new String(content, Charset.forName("UTF-8")).getBytes();
+                            byte[] uppedContent = new String(content, Charset.forName(Constants.UTF8)).getBytes();
                             return bufferFactory.wrap(uppedContent);
                         }));
                     }

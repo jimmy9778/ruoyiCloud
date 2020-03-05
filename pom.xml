@@ -229,7 +229,6 @@
         <module>ruoyi-service-api</module>
         <module>ruoyi-service</module>
         <module>ruoyi-tool</module>
-        <module>ruoyi-zuul</module>
     </modules>
     <packaging>pom</packaging>
 

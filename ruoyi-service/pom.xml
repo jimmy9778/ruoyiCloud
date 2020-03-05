@@ -12,6 +12,7 @@
     <build/>
     <modules>
         <module>ruoyi-system</module>
+        <module>ruoyi-system2</module>
         <module>ruoyi-auth</module>
         <module>ruoyi-gen</module>
         <module>ruoyi-dfs</module>
