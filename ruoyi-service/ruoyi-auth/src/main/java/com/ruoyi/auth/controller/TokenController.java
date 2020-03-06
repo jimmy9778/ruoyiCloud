@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @RestController
 public class TokenController
@@ -42,5 +43,12 @@ public class TokenController
             tokenService.expireToken(user.getUserId());
         }
         return R.ok();
+    }
+
+    @RequestMapping("/common/get")
+    public R get(HttpServletRequest request, @RequestBody Map form)
+    {
+//        JSONObject.toJSON(form).toString();
+        return R.ok(form);
     }
 }
